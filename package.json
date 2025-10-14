@@ -1,20 +1,24 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "a basic app to deploy",
+  "description": "a backend",
   "keywords": [
-    "node",
+    "javascript",
     "backend"
   ],
+  "homepage": "https://github.com/laibaakramm/backend#readme",
+  "bugs": {
+    "url": "https://github.com/laibaakramm/backend/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/laibaakramm/backend.git"
+  },
   "license": "ISC",
   "author": "",
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
-  },
-  "dependencies": {
-    "dotenv": "^17.2.3",
-    "express": "^5.1.0"
+    "test": "echo \"Error: no test specified\" && exit 1"
   }
 }
