@@ -9,7 +9,7 @@ export const verifyJWT = asyncHandler(async(req, _, next) => {
 
         // console.log(token);
         if (!token) {
-            throw new ApiError(401, "Unauthorized request")
+            throw new ApiError("Unauthorized request", 401)
         }
     
         const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
@@ -18,13 +18,18 @@ export const verifyJWT = asyncHandler(async(req, _, next) => {
     
         if (!user) {
             
-            throw new ApiError(401, "Invalid Access Token")
+            throw new ApiError("Invalid Access Token", 401)
         }
     
         req.user = user;
         next()
     } catch (error) {
-        throw new ApiError(401, error?.message || "Invalid access token")
+        //throw new ApiError(401, error?.message || "Invalid access token")
+
+         const err = error instanceof ApiError ? error : new ApiError(401, error?.message || "Invalid access token");
+        err.statusCode = Number(err.statusCode) || 401;
+        // if using asyncHandler you can throw, but forwarding keeps the shape consistent
+        throw err;
     }
     
 })

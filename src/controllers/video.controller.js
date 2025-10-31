@@ -6,6 +6,81 @@ import {ApiResponse} from "../utils/ApiResponse.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
 
+// const createVideo = asyncHandler(async (req, res) => {
+//   const { title, description, url, thumbnail } = req.body;
+
+//   // Optionally get user ID from JWT middleware
+//   const userId = req.user?._id;
+
+//   if (!title || !url) {
+//     return res.status(400).json({ success: false, message: "Title and URL are required." });
+//   }
+
+//   const video = await Video.create({
+//     title,
+//     description,
+//     url,
+//     thumbnail,
+//     user: userId
+//   });
+
+//   res.status(201).json({
+//     success: true,
+//     message: "Video uploaded successfully",
+//     data: video
+//   });
+// });
+
+
+const createVideo = asyncHandler(async (req, res) => {
+  const { title, description } = req.body;
+  const userId = req.user?._id;
+
+  // Validate required fields
+  if (!title || !description) {
+    return res.status(400).json({ success: false, message: "Title and description are required." });
+  }
+  if (!req.files || !req.files.videoFile || !req.files.thumbnail) {
+    return res.status(400).json({ success: false, message: "Video file and thumbnail are required." });
+  }
+
+  // Upload video file to Cloudinary
+//   const videoUpload = await uploadOnCloudinary(req.files.videoFile[0].path);
+//   if (!videoUpload?.secure_url) {
+//     return res.status(500).json({ success: false, message: "Video upload failed." });
+//   }
+
+  const videoFilePath = req.files.videoFile[0].path;     // local path or URL after upload
+  const thumbnailPath = req.files.thumbnail[0].path;     // local path or URL after upload
+
+
+    const videoUrl = videoFilePath;
+  const thumbnailUrl = thumbnailPath;
+  const duration = 0; // Placeholder for duration, replace with actual logic if needed
+  // Upload thumbnail if provided
+  //let thumbnailUrl = "";
+//   if (req.files.thumbnail && req.files.thumbnail.length > 0) {
+//     const thumbnailUpload = await uploadOnCloudinary(req.files.thumbnail[0].path, "thumbnails");
+//     thumbnailUrl = thumbnailUpload?.secure_url || "";
+//   }
+
+  // Create video document in DB with URLs from Cloudinary
+  const video = await Video.create({
+    title,
+    description,
+    videoFile: videoUrl,
+    duration,
+    thumbnail: thumbnailUrl,
+    user: userId
+  });
+
+  res.status(201).json({
+    success: true,
+    message: "Video uploaded successfully",
+    data: video
+  });
+});
+
 
 const getAllVideos = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, query = "", sortBy="createdAt", sortType="desc"  , userId } = req.query
@@ -211,6 +286,7 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
 })
 
 export {
+    createVideo,
     getAllVideos,
     publishAVideo,
     getVideoById,
